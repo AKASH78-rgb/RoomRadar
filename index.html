@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoomRadar | Find your room, right on the map</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="logo" onclick="navigateTo('home')">
+      <span class="logo-dot"></span>
+      RoomRadar
+    </div>
+    <nav class="nav-links">
+      <div class="nav-item active" id="nav-home" onclick="navigateTo('home')">Home</div>
+      <div class="nav-item" id="nav-search" onclick="navigateTo('search')">Find Rooms</div>
+      <div class="nav-item" id="nav-list" onclick="navigateTo('list')">List your room</div>
+      <div class="nav-item" id="nav-dashboard" onclick="navigateTo('dashboard')">Owner Dashboard</div>
+    </nav>
+    <div class="header-right">
+      <span class="badge-free">100% Free</span>
+    </div>
+  </header>
+
+  <!-- ================= LANDING PAGE VIEW ================= -->
+  <main class="page-view active" id="view-home">
+    <section class="hero">
+      <p class="hero-tagline">No Agents. No Fees. No Stress.</p>
+      <h1 class="hero-title">Find your room,<br><span>right on the map</span></h1>
+      <p class="hero-desc">Open the map, spot rooms near you, check photos, and call the owner directly. That's it.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="navigateTo('search')">Find rooms near me <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.8rem"></i></button>
+        <button class="btn btn-secondary" onclick="navigateTo('list')">List your room</button>
+      </div>
+      <p class="hero-footnote"><span>Always free</span> for students and owners</p>
+    </section>
+
+    <!-- Browser Mockup Illustrating Map & Listings -->
+    <div class="map-mockup-wrapper">
+      <div class="mock-browser-header">
+        <span class="mock-dot red"></span>
+        <span class="mock-dot yellow"></span>
+        <span class="mock-dot green"></span>
+        <div class="mock-browser-url">roomradar.in</div>
+      </div>
+      <div class="mock-map-container">
+        <!-- Interactive Pins on Mockup -->
+        <div class="mock-pin pin-1" onclick="navigateTo('search')">₹6,500/mo</div>
+        <div class="mock-pin pin-2" onclick="navigateTo('search')">₹4,200/mo</div>
+        <div class="mock-pin pin-3" onclick="navigateTo('search')">₹5,800/mo</div>
+        
+        <div class="mock-radar-pulse" onclick="navigateTo('search')">
+          <div class="mock-radar-inner"></div>
+        </div>
+
+        <!-- Horizontal Scrollable Room Cards (Matches User's Mockup) -->
+        <div class="mock-cards-row">
+          <div class="mock-card" onclick="navigateTo('search')">
+            <div class="mock-photo-ph"><i class="fa-solid fa-bed"></i></div>
+            <div class="mock-card-title">PG near Infosys Gate</div>
+            <div class="mock-card-dist"><i class="fa-solid fa-location-dot"></i> 0.3 km away</div>
+            <div class="mock-card-price">₹6,500 / mo</div>
+            <div class="mock-card-btn">Call owner</div>
+          </div>
+          <div class="mock-card" onclick="navigateTo('search')">
+            <div class="mock-photo-ph yellow"><i class="fa-solid fa-house"></i></div>
+            <div class="mock-card-title">Single room, Vijayanagar</div>
+            <div class="mock-card-dist"><i class="fa-solid fa-location-dot"></i> 0.7 km away</div>
+            <div class="mock-card-price">₹4,200 / mo</div>
+            <div class="mock-card-btn">Call owner</div>
+          </div>
+          <div class="mock-card" onclick="navigateTo('search')">
+            <div class="mock-photo-ph purple"><i class="fa-solid fa-seedling"></i></div>
+            <div class="mock-card-title">2-share PG, girls only</div>
+            <div class="mock-card-dist"><i class="fa-solid fa-location-dot"></i> 1.1 km away</div>
+            <div class="mock-card-price">₹5,800 / mo</div>
+            <div class="mock-card-btn">Call owner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="section-container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i class="fa-solid fa-map-location-dot"></i></div>
+            <h3>Open the map</h3>
+            <p>Rooms near you show up as pins instantly. Navigate visually to see where they are situated.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i class="fa-solid fa-images"></i></div>
+            <h3>Check photos</h3>
+            <p>See real photos before you visit. Know what you are paying for without surprises.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i class="fa-solid fa-phone-volume"></i></div>
+            <h3>Call the owner</h3>
+            <p>One tap, direct contact. Deal directly with owners — no broker fees, no middleman commissions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-logo">
+        <span class="logo-dot"></span>
+        RoomRadar
+      </div>
+      <p>A student project · Free for everyone · Mysuru</p>
+    </footer>
+  </main>
+
+  <!-- ================= MAP + ROOM SEARCH PAGE ================= -->
+  <main class="page-view" id="view-search">
+    <div class="search-page-container">
+      <!-- Top Search & Filter Bar -->
+      <div class="search-filter-bar">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="search-input" id="search-location" placeholder="Search by city, area or street..." value="Mysuru">
+        </div>
+        
+        <!-- Price Filter -->
+        <select class="filter-select" id="filter-price" onchange="applyFilters()">
+          <option value="any">Rent: Any Price</option>
+          <option value="low">Under ₹5,000</option>
+          <option value="mid">₹5,000 - ₹8,000</option>
+          <option value="high">Above ₹8,000</option>
+        </select>
+
+        <!-- Gender Filter -->
+        <select class="filter-select" id="filter-gender" onchange="applyFilters()">
+          <option value="any">Gender: Any</option>
+          <option value="girls">Girls Only</option>
+          <option value="boys">Boys Only</option>
+        </select>
+      </div>
+
+      <!-- Map View (60% Screen) -->
+      <div class="map-view-section">
+        <div id="search-map"></div>
+      </div>
+
+      <!-- Horizontal Scrollable Room Cards (40% Screen) -->
+      <div class="cards-scroll-section" id="room-cards-container">
+        <!-- Room cards will be dynamically rendered here by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= OWNER — LIST YOUR ROOM FORM ================= -->
+  <main class="page-view" id="view-list">
+    <div class="form-page-wrapper">
+      <div class="form-header">
+        <h2>List Your Room</h2>
+        <p>Post details about your room in less than a minute. It's completely free!</p>
+      </div>
+      <form class="form-card" id="room-listing-form" onsubmit="handleFormSubmit(event)">
+        <!-- Room Title -->
+        <div class="form-group">
+          <label class="form-label" for="form-title">Room Title</label>
+          <input type="text" class="form-control" id="form-title" placeholder="e.g. Premium Single Room near SJCE" required>
+        </div>
+
+        <!-- Address -->
+        <div class="form-group">
+          <label class="form-label" for="form-address">Address / Location Details</label>
+          <textarea class="form-control" id="form-address" placeholder="Enter complete address of the property" required></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- Rent -->
+          <div class="form-group">
+            <label class="form-label" for="form-rent">Monthly Rent (₹)</label>
+            <input type="number" class="form-control" id="form-rent" placeholder="e.g. 5500" min="500" required>
+          </div>
+          <!-- Room Type -->
+          <div class="form-group">
+            <label class="form-label" for="form-type">Room Type</label>
+            <select class="form-control" id="form-type" required>
+              <option value="single">Single Room</option>
+              <option value="double share">Double Share</option>
+              <option value="PG">PG (Paying Guest)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- Gender Preference -->
+          <div class="form-group">
+            <label class="form-label" for="form-gender">Gender Preference</label>
+            <select class="form-control" id="form-gender" required>
+              <option value="any">Any (Boys & Girls)</option>
+              <option value="girls">Girls Only</option>
+              <option value="boys">Boys Only</option>
+            </select>
+          </div>
+          <!-- Form Hidden Field for Edit State -->
+          <input type="hidden" id="form-edit-id" value="">
+        </div>
+
+        <!-- Amenities (Checkboxes) -->
+        <div class="form-group">
+          <label class="form-label">Available Amenities</label>
+          <div class="checkboxes-grid">
+            <label class="checkbox-tile" id="tile-wifi">
+              <input type="checkbox" id="amenity-wifi" value="wifi" onchange="toggleTile('tile-wifi')"> Wifi
+            </label>
+            <label class="checkbox-tile" id="tile-food">
+              <input type="checkbox" id="amenity-food" value="food" onchange="toggleTile('tile-food')"> Food
+            </label>
+            <label class="checkbox-tile" id="tile-ac">
+              <input type="checkbox" id="amenity-ac" value="ac" onchange="toggleTile('tile-ac')"> AC
+            </label>
+            <label class="checkbox-tile" id="tile-parking">
+              <input type="checkbox" id="amenity-parking" value="parking" onchange="toggleTile('tile-parking')"> Parking
+            </label>
+            <label class="checkbox-tile" id="tile-washing">
+              <input type="checkbox" id="amenity-washing" value="washing machine" onchange="toggleTile('tile-washing')"> Washing Machine
+            </label>
+          </div>
+        </div>
+
+        <!-- Upload Photos -->
+        <div class="form-group">
+          <label class="form-label">Upload Photos (Up to 5)</label>
+          <div class="photo-upload-zone" onclick="document.getElementById('form-file-input').click()">
+            <i class="fa-solid fa-cloud-arrow-up photo-upload-icon"></i>
+            <div class="photo-upload-text">Click or drag files to upload</div>
+            <div class="photo-upload-subtext">Max 5 photos, PNG or JPG format</div>
+            <input type="file" id="form-file-input" style="display: none;" multiple accept="image/*" onchange="handleFileSelect(event)">
+          </div>
+          <div class="photo-previews-container" id="photo-previews">
+            <!-- Uploaded preview slots will go here -->
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- Owner Name -->
+          <div class="form-group">
+            <label class="form-label" for="form-owner-name">Owner Name</label>
+            <input type="text" class="form-control" id="form-owner-name" placeholder="e.g. Ramesh Kumar" required>
+          </div>
+          <!-- Owner Phone -->
+          <div class="form-group">
+            <label class="form-label" for="form-owner-phone">Phone Number</label>
+            <input type="tel" class="form-control" id="form-owner-phone" placeholder="e.g. 9876543210" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" required>
+          </div>
+        </div>
+
+        <!-- Post My Room Button -->
+        <button type="submit" class="btn-submit-form" id="btn-submit-form">Post my room</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- ================= OWNER DASHBOARD ================= -->
+  <main class="page-view" id="view-dashboard">
+    <div class="dashboard-wrapper">
+      
+      <!-- Profile Header -->
+      <div class="dash-header-profile">
+        <div class="dash-avatar">A</div>
+        <div class="dash-profile-info">
+          <h2>Akash's Dashboard</h2>
+          <p>Manage your rooms, view stats, and connect with potential tenants.</p>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-lbl">Total Listings</span>
+            <span class="stat-val" id="stat-listings-count">0</span>
+          </div>
+          <div class="stat-icon"><i class="fa-solid fa-house-chimney"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-lbl">Views This Week</span>
+            <span class="stat-val" id="stat-views-count">142</span>
+          </div>
+          <div class="stat-icon"><i class="fa-solid fa-eye"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-lbl">Calls Received</span>
+            <span class="stat-val" id="stat-calls-count">12</span>
+          </div>
+          <div class="stat-icon"><i class="fa-solid fa-phone-flip"></i></div>
+        </div>
+      </div>
+
+      <!-- Listings Manager List -->
+      <div class="listings-section-header">My Rooms</div>
+      <div class="dash-listings-list" id="dashboard-listings-list">
+        <!-- Listings will be rendered dynamically -->
+      </div>
+
+      <!-- Floating Add New Room Button -->
+      <button class="btn-floating-add" onclick="openCreateForm()" title="Add new room">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+
+    </div>
+  </main>
+
+  <!-- ================= ROOM DETAIL MODAL ================= -->
+  <div class="detail-modal-overlay" id="detail-modal" onclick="closeDetailsModal(event)">
+    <div class="detail-modal-content" onclick="event.stopPropagation()">
+      <button class="detail-close-btn" onclick="closeDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
+      
+      <!-- Gallery Grid (3-4 photo slots) -->
+      <div class="gallery-grid" id="detail-gallery">
+        <!-- Will be dynamically populated with images -->
+      </div>
+
+      <!-- Title, Price, Distance -->
+      <div class="detail-main-info">
+        <div class="detail-header-left">
+          <div class="detail-tags" id="detail-tags">
+            <!-- E.g. Girls Only, Single Room -->
+          </div>
+          <h2 class="detail-title" id="detail-title">Single Room near Infosys Gate</h2>
+          <div class="detail-location-info">
+            <i class="fa-solid fa-location-dot" style="color: var(--primary)"></i> 
+            <span id="detail-distance">0.3 km away</span> · <span id="detail-address">Vijayanagar, Mysuru</span>
+          </div>
+        </div>
+        <div class="detail-price-box">
+          <span class="detail-price-value" id="detail-price">₹6,500</span>
+          <span class="detail-price-lbl">per month</span>
+        </div>
+      </div>
+
+      <!-- Owner Avatar Card & Call Button -->
+      <div class="detail-owner-card">
+        <div class="owner-profile">
+          <div class="owner-avatar" id="detail-owner-avatar">R</div>
+          <div class="owner-info">
+            <div class="owner-name" id="detail-owner-name">Ramesh Kumar</div>
+            <div class="owner-role">Room Owner</div>
+          </div>
+        </div>
+        <button class="btn-detail-call" id="btn-detail-call" onclick="callOwnerAction()">
+          <i class="fa-solid fa-phone"></i> Call owner
+        </button>
+      </div>
+
+      <!-- Amenities Section -->
+      <div>
+        <div class="detail-section-title">Amenities</div>
+        <div class="amenities-grid" id="detail-amenities">
+          <!-- Dynamically filled with icons -->
+        </div>
+      </div>
+
+      <!-- Location on Embedded Small Map -->
+      <div>
+        <div class="detail-section-title">Location on Map</div>
+        <div class="detail-map-wrapper">
+          <div id="detail-map"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= DIALER / CALL SIMULATOR MODAL ================= -->
+  <div class="call-modal-overlay" id="call-modal">
+    <div class="call-modal-content">
+      <div class="call-avatar" id="call-avatar-circle">O</div>
+      <div>
+        <h2 class="call-owner-name" id="call-owner-name">Owner Name</h2>
+        <p class="call-phone" id="call-phone-num">+91 9876543210</p>
+      </div>
+      <div class="call-status">Ringing...</div>
+      <div class="call-actions-row">
+        <button class="btn-end-call" onclick="endCallSimulator()"><i class="fa-solid fa-phone-slash"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CUSTOM CONFIRM DELETE MODAL ================= -->
+  <div class="confirm-modal-overlay" id="confirm-delete-modal">
+    <div class="confirm-modal-content">
+      <div class="confirm-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+      <h2>Delete Listing?</h2>
+      <p>Are you sure you want to delete this listing? This action cannot be undone and the room will be permanently removed.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" onclick="closeDeleteConfirm()">Cancel</button>
+        <button class="btn btn-danger" id="btn-confirm-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- App JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
